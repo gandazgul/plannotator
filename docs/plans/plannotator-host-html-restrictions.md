@@ -21,7 +21,7 @@ origin: "internal"
 userVerifiedAt: null
 targetBranch: "main"
 deliveryBranch: "plan/plannotator-host-html-restrictions"
-status: "in_progress"
+status: "implemented"
 ---
 
 # Host-Controlled Restrictions for HTML Annotation
