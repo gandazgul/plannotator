@@ -5120,7 +5120,11 @@ describe("self-contained host policy", () => {
   const cases: Array<[string, string]> = [
     ["<!doctype html>", "<html lang='en'><head></head><body>text</body></html>"],
     ["<!DOCTYPE html>", "<head></head>"],
-    [" \n<!-- lead --><!-- another --><!doctype html>", "<head></head>"],
+    [" \t\n\f\r<!-- lead --><!-- another --><!doctype html>", "<head></head>"],
+    ["<!--><!---><!-- lead --!><!doctype html>", "<head></head>"],
+    ["", "\u00a0<!doctype html><head></head><p>Author text</p>"],
+    ["", "<!--><p>Author text</p><!-- tail --><!doctype html><head></head>"],
+    ["", "<!-- lead --!><p>Author text</p><!-- tail --><!doctype html><head></head>"],
     ["", "<html><head></head><body>no doctype</body></html>"],
     ["<!doctype html>", "<html><body>no head</body></html>"],
     ["<!doctype html>", '<script src="remote.js"></script><head></head>'],

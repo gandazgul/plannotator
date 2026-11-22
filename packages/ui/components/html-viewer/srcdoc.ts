@@ -321,8 +321,15 @@ export const SELF_CONTAINED_CSP = "default-src 'none'; script-src 'unsafe-inline
 
 /** Apply last: the parser must see the host policy and lock before author markup. */
 export function applySelfContainedPolicy(document: string): string {
-  const leadingDoctype = /^(?:\s|<!--[\s\S]*?-->)*<!doctype\b[^>]*>/i.exec(document);
-  const position = leadingDoctype?.[0].length ?? 0;
+  // Skip only HTML whitespace and complete comments. Commit to each comment's
+  // first terminator so the scan cannot backtrack across author markup.
+  const preambleToken = /[ \t\n\f\r]+|<!--(?:-?>|[\s\S]*?--!?>)/y;
+  let preambleEnd = 0;
+  while (preambleToken.test(document)) preambleEnd = preambleToken.lastIndex;
+
+  const doctype = /<!doctype[^>]*>/iy;
+  doctype.lastIndex = preambleEnd;
+  const position = doctype.test(document) ? doctype.lastIndex : 0;
   const policy = `<meta http-equiv="Content-Security-Policy" content="${SELF_CONTAINED_CSP}"><script>Object.defineProperty(window, "__plannotatorLiveConfig", { value: null, writable: false, configurable: false, enumerable: false });</script>`;
   return document.slice(0, position) + policy + document.slice(position);
 }
