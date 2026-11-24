@@ -1,0 +1,3 @@
+{
+  "verification_command": "(\n  set -e\n  bun install --frozen-lockfile\n  bun run check:release-version\n  bun run typecheck\n  bun run --cwd apps/vscode-extension lint\n  bun run --cwd packages/ui smoke:package\n\n  for lane in heavy-mod heavy-agents unit-1 unit-2 unit-3 dom-1 dom-2 dom-3 dom-4; do\n    bun run scripts/ci-test-lane.ts \"$lane\"\n  done\n\n  bun run build\n  bun test tests/entry-assets.test.ts packages/ui/components/html-viewer/bridgeAsset.test.ts\n)"
+}
