@@ -100,7 +100,8 @@ afterEach(() => {
 });
 
 async function until(check: () => boolean, what: string) {
-  for (let i = 0; i < 100; i++) {
+  const deadline = performance.now() + 4000;
+  while (performance.now() < deadline) {
     if (check()) return;
     await act(async () => {
       await new Promise((r) => setTimeout(r, 50));
@@ -111,17 +112,20 @@ async function until(check: () => boolean, what: string) {
 
 test.skipIf(!hasDom)('an old leaked subject shows as its first line in the list row and the thread header', async () => {
   window.location.hash = `#thread=${leaked}`;
-  host = document.createElement('div');
-  document.body.appendChild(host);
-  act(() => {
-    root = createRoot(host!);
+  const el = host = document.createElement('div');
+  document.body.appendChild(el);
+  await act(async () => {
+    root = createRoot(el);
     root.render(<InboxApp />);
   });
-  await until(() => host!.querySelector('.ib-subject') !== null && host!.querySelector(`[data-row="${leaked}"]`) !== null, 'the row and the thread');
-  const row = host.querySelector(`[data-row="${leaked}"]`)!;
-  expect(row.textContent).toContain(SHOWN);
-  expect(host.querySelector('.ib-subject')!.textContent).toBe(SHOWN);
-  const everything = host.textContent ?? '';
+  const quietBand = () => el.querySelector<HTMLButtonElement>('[data-section-id="quiet"] button.ib-band');
+  await until(() => el.querySelector('.ib-subject') !== null && quietBand() !== null, 'the thread header and the Quiet group');
+  // Quiet is folded by default, so its rows are not rendered until it opens.
+  const band = quietBand()!;
+  if (band.getAttribute('aria-expanded') === 'false') await act(async () => band.click());
+  expect(el.querySelector(`[data-row="${leaked}"]`)?.textContent).toContain(SHOWN);
+  expect(el.querySelector('.ib-subject')!.textContent).toBe(SHOWN);
+  const everything = el.textContent ?? '';
   expect(everything).not.toContain('</subject>');
   expect(everything).not.toContain('<parameter');
   expect(everything).not.toContain('ws-rollup-2026-10-20-a');

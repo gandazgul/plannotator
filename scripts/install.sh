@@ -1918,10 +1918,12 @@ run_with_time_limit() {
         sleep "$_rtl_secs" &
         _rtl_sleep=$!
         wait "$_rtl_sleep"
-        : > "$_rtl_flag"
-        kill -TERM "$_rtl_pid" 2>/dev/null
+        # Start the grace timer before TERM. The command can exit at once,
+        # and Bash 3.2 can stall if cancellation interrupts a background fork.
         sleep 5 &
         _rtl_sleep=$!
+        : > "$_rtl_flag"
+        kill -TERM "$_rtl_pid" 2>/dev/null
         wait "$_rtl_sleep"
         kill -KILL "$_rtl_pid" 2>/dev/null
     ) >/dev/null 2>&1 </dev/null &

@@ -19,7 +19,7 @@ origin: "internal"
 userVerifiedAt: null
 targetBranch: "main"
 deliveryBranch: "plan/plannotator-annotation-context"
-status: "implemented"
+status: "reviewed"
 ---
 
 # Displayed Context on HTML Annotations
