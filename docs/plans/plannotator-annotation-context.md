@@ -19,13 +19,13 @@ origin: "internal"
 userVerifiedAt: null
 targetBranch: "main"
 deliveryBranch: "plan/plannotator-annotation-context"
-status: "reviewed"
 validatedCommit: "35152fed915692818b5ee46ba8a454af992f4840"
 workRecord:
   status: "generated"
   recordId: "f077d31d-59ce-4f32-8579-d7dc87d23477"
   path: "docs/work-records/2026-11-25-displayed-context-for-html-annotations.md"
   lastAttemptAt: "2026-11-25T02:34:05.632Z"
+status: "verified"
 ---
 
 # Displayed Context on HTML Annotations
